@@ -31,6 +31,6 @@ public class Controler {
         //a1.teamOptimazation(s, e, 10);
         
         TeamScheduleOptimization tso = new TeamScheduleOptimization(l1);
-        tso.teamOptimazation(s, e, 8);
+        tso.teamOptimazation(s, e, 5);
     }
 }

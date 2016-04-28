@@ -18,8 +18,8 @@ public class Fantasy_Hockey {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String teamPath = "C:\\Users\\Billy\\Desktop\\Fantasy_Project\\List_of_teams.txt";
-        String schedulePath = "C:\\Users\\Billy\\Desktop\\Fantasy_Project\\2015_2016_NHL_Schedule.csv";
+        String teamPath = "C:\\Users\\Billy\\Desktop\\Programing\\Fantasy_Project\\List_of_teams.txt";
+        String schedulePath = "C:\\Users\\Billy\\Desktop\\Programing\\Fantasy_Project\\2015_2016_NHL_Schedule.csv";
         
         Controler c1 = new Controler(teamPath, schedulePath);
     }
