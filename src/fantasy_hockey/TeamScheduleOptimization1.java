@@ -5,6 +5,7 @@
  */
 package fantasy_hockey;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -22,6 +23,17 @@ public class TeamScheduleOptimization1 {
     private Date end;
     private double avgNumberOfGames;
     private double solutionAvgNumOfGames; 
+    
+    private int bestScore;
+    private int[] bestTeams;
+    private int currentScore;
+    private int[] currentTeams;
+    private int maxTeams;
+    private int totalNumTeams;
+    
+    public int maxCounter;
+    public int counter;
+    
     
     
     
@@ -75,43 +87,60 @@ public class TeamScheduleOptimization1 {
         double avgScore = 0;
         int tempAvgScore = 0;
         
+        bestScore = 0;
+        this.maxTeams = maxTeams;
+        currentTeams = new int[maxTeams];
+        bestTeams = new int[maxTeams];
+        totalNumTeams = numOfTeams;
+        counter = 0;
+        maxCounter = possibleComb(totalNumTeams, maxTeams);
         
         int[] currentCombo = new int[maxTeams];
         for(int i = 0; i<maxTeams; i++){
             currentCombo[i] = i;
         }
+        
+        System.out.println("balls");
         //not sure about the while logic
-        while(currentCombo[0] < (numOfTeams - maxTeams)){
-            
+        recursiveTeamOptimizer(-1, 0);
+        System.out.println("Number of combos: "+ counter+" of "+ maxCounter + " possible.");
+        
+        System.out.println("Optimal team Combination:");
+        for(int h = 0; h < maxTeams; h++){
+            System.out.println(league.getTeamByIndex(bestTeams[h]).getName());
         }
+        System.out.println("Independence score of "+ bestScore);
+        double rawScoreIndex = (double)(currentSolutionScore) / (double)(maxTeams * avgGamesPlayed);
+        System.out.println("Independence index of "+ rawScoreIndex);
+        System.out.println("Avg independence index was "+ (avgScore / (double)(maxTeams * avgGamesPlayed)));
         
         
-        int[] indexes = new int[league.getNumberOfTeams()];
-        for(int i = 0; i< league.getNumberOfTeams(); i++){
-            indexes[i] = i;
-        }
-        int[][] combos = combinationGenerator(indexes, maxTeams);
-        
-        for(int z =0; z < combos.length; z++){
-            
-            int possibleScore = teamComboEvaluator(combos[z], scheduleSquared);
-            tempAvgScore += possibleScore;
-            if(possibleScore >= currentSolutionScore){
-                //currentSolution = possibleSolution;
-                for(int h = 0; h < maxTeams; h++){
-                    currentSolution[h] = combos[z][h];
-                }
-                currentSolutionScore = possibleScore; 
-            }
-            
-            if((z % 1000)==0){
-                avgScore += (double)(tempAvgScore)/combos.length;
-                tempAvgScore = 0;
-            }
-        }
-        avgScore += (double)(tempAvgScore)/combos.length;
-        
-        
+//        int[] indexes = new int[league.getNumberOfTeams()];
+//        for(int i = 0; i< league.getNumberOfTeams(); i++){
+//            indexes[i] = i;
+//        }
+//        int[][] combos = combinationGenerator(indexes, maxTeams);
+//        
+//        for(int z =0; z < combos.length; z++){
+//            
+//            int possibleScore = teamComboEvaluator(combos[z], scheduleSquared);
+//            tempAvgScore += possibleScore;
+//            if(possibleScore >= currentSolutionScore){
+//                currentSolution = possibleSolution;
+//                for(int h = 0; h < maxTeams; h++){
+//                    currentSolution[h] = combos[z][h];
+//                }
+//                currentSolutionScore = possibleScore; 
+//            }
+//            
+//            if((z % 1000)==0){
+//                avgScore += (double)(tempAvgScore)/combos.length;
+//                tempAvgScore = 0;
+//            }
+//        }
+//        avgScore += (double)(tempAvgScore)/combos.length;
+//        
+//        
 //        for(int i=0; i < numOfTeams; i++){
 //            possibleSolution[0]= i;
 //            
@@ -136,15 +165,48 @@ public class TeamScheduleOptimization1 {
 //                }
 //            }
 //        }
+//        
+//        System.out.println("Optimal team Combination:");
+//        for(int h = 0; h < maxTeams; h++){
+//            System.out.println(league.getTeamByIndex(currentSolution[h]).getName());
+//        }
+//        System.out.println("Independence score of "+ currentSolutionScore);
+//        double rawScoreIndex = (double)(currentSolutionScore) / (double)(maxTeams * avgGamesPlayed);
+//        System.out.println("Independence index of "+ rawScoreIndex);
+//        System.out.println("Avg independence index was "+ (avgScore / (double)(maxTeams * avgGamesPlayed)));
+//        
+    }
+    
+    private void recursiveTeamOptimizer(int previous, int currentPlace){
         
-        System.out.println("Optimal team Combination:");
-        for(int h = 0; h < maxTeams; h++){
-            System.out.println(league.getTeamByIndex(currentSolution[h]).getName());
+        //counter++;
+        
+        int remainingTeams = maxTeams - currentPlace;
+        if(remainingTeams <= 0){
+            
+            currentScore = teamComboEvaluator(currentTeams, scheduleSquared);
+            
+            if(currentScore > bestScore){
+                //bestTeams = currentTeams;        
+                for(int j = 0; j < maxTeams; j++){
+                    bestTeams[j] = currentTeams[j];
+                }
+                
+                bestScore = currentScore;
+            }
+            
+//            for(int i = 0; i<maxTeams; i++){
+//                System.out.print(currentTeams[i]+", ");
+//            }
+//            System.out.println();
+            counter++;
+        }else{
+            for(int i = previous+1; i < (totalNumTeams - remainingTeams +1); i++){
+                currentTeams[currentPlace] = i;
+                //evaluate current teams
+                recursiveTeamOptimizer(i, currentPlace + 1);
+            }
         }
-        System.out.println("Independence score of "+ currentSolutionScore);
-        double rawScoreIndex = (double)(currentSolutionScore) / (double)(maxTeams * avgGamesPlayed);
-        System.out.println("Independence index of "+ rawScoreIndex);
-        System.out.println("Avg independence index was "+ (avgScore / (double)(maxTeams * avgGamesPlayed)));
         
     }
     
